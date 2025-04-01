@@ -171,8 +171,7 @@ route:
 
 resources: {}
 
-nodeSelector: 
-  node-role: infra
+nodeSelector:  {}
 
 tolerations: 
 - key: "node-role"

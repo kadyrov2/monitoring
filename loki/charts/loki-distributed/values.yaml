@@ -506,14 +506,9 @@ ingester:
   # -- Max Surge for ingester pods
   maxSurge: 0
   # -- Node selector for ingester pods
-  tolerations:
-  - key: "node-role"
-    operator: "Equal"
-    value: "infra"
-    effect: "NoSchedule"
+  tolerations: {}
 
-  nodeSelector:
-    node-role: infra
+  nodeSelector:  {}
 
   # -- readiness probe settings for ingester pods. If empty, use `loki.readinessProbe`
   readinessProbe: {}
@@ -636,14 +631,9 @@ distributor:
   # -- Max Surge for distributor pods
   maxSurge: 0
   # -- Node selector for distributor pods
-  tolerations:
-  - key: "node-role"
-    operator: "Equal"
-    value: "infra"
-    effect: "NoSchedule"
+  tolerations: {}
     
-  nodeSelector:
-    node-role: infra
+  nodeSelector:  {}
 
   appProtocol:
     # -- Set the optional grpc service protocol. Ex: "grpc", "http2" or "https"
@@ -750,14 +740,9 @@ querier:
   # -- Max Surge for querier pods
   maxSurge: 0
   # -- Node selector for querier pods
-  tolerations:
-  - key: "node-role"
-    operator: "Equal"
-    value: "infra"
-    effect: "NoSchedule"
-    
-  nodeSelector:
-    node-role: infra
+  tolerations: {}
+
+  nodeSelector:  {}
 
   dnsConfig: {}
   persistence:
@@ -866,14 +851,10 @@ queryFrontend:
   # -- Pod Disruption Budget maxUnavailable
   maxUnavailable: null
   # -- Node selector for query-frontend pods
-  tolerations:
-  - key: "node-role"
-    operator: "Equal"
-    value: "infra"
-    effect: "NoSchedule"
+  tolerations: {}
+ 
     
-  nodeSelector:
-    node-role: infra
+  nodeSelector:  {}
 
   appProtocol:
     # -- Set the optional grpc service protocol. Ex: "grpc", "http2" or "https"
@@ -942,14 +923,10 @@ queryScheduler:
   # -- Pod Disruption Budget maxUnavailable
   maxUnavailable: 1
   # -- Node selector for query-scheduler pods
-  tolerations:
-  - key: "node-role"
-    operator: "Equal"
-    value: "infra"
-    effect: "NoSchedule"
+  tolerations: {}
+ 
     
-  nodeSelector:
-    node-role: infra
+  nodeSelector:  {}
 
   appProtocol:
     grpc: ""
@@ -1013,14 +990,10 @@ tableManager:
                 {{- include "loki.tableManagerSelectorLabels" . | nindent 12 }}
             topologyKey: failure-domain.beta.kubernetes.io/zone
   # -- Node selector for table-manager pods
-  tolerations:
-  - key: "node-role"
-    operator: "Equal"
-    value: "infra"
-    effect: "NoSchedule"
+  tolerations: {}
+
     
-  nodeSelector:
-    node-role: infra
+  nodeSelector:  {}
 
 # Use either this ingress or the gateway, but not both at once.
 # If you enable this, make sure to disable the gateway.
@@ -1166,14 +1139,10 @@ gateway:
   # -- Pod Disruption Budget maxUnavailable
   maxUnavailable: null
   # -- Node selector for gateway pods
-  tolerations:
-  - key: "node-role"
-    operator: "Equal"
-    value: "infra"
-    effect: "NoSchedule"
+  tolerations: {}
+
     
-  nodeSelector:
-    node-role: infra  
+  nodeSelector:  {}
 
   # -- DNSConfig for gateway pods
   dnsConfig: {}
@@ -1456,14 +1425,10 @@ compactor:
   # -- Grace period to allow the compactor to shutdown before it is killed
   terminationGracePeriodSeconds: 30
   # -- Node selector for compactor pods
-  tolerations:
-  - key: "node-role"
-    operator: "Equal"
-    value: "infra"
-    effect: "NoSchedule"
+  tolerations: {}
+
     
-  nodeSelector:
-    node-role: infra
+  nodeSelector:  {}
 
   appProtocol:
     grpc: ""
@@ -1578,14 +1543,10 @@ ruler:
   # -- Pod Disruption Budget maxUnavailable
   maxUnavailable: null
   # -- Node selector for ruler pods
-  tolerations:
-  - key: "node-role"
-    operator: "Equal"
-    value: "infra"
-    effect: "NoSchedule"
+  tolerations: {}
+
     
-  nodeSelector:
-    node-role: infra
+  nodeSelector:  {}
 
   dnsConfig: {}
   persistence:
@@ -1736,14 +1697,10 @@ indexGateway:
   # -- Pod Disruption Budget maxUnavailable
   maxUnavailable: null
   # -- Node selector for index-gateway pods
-  tolerations:
-  - key: "node-role"
-    operator: "Equal"
-    value: "infra"
-    effect: "NoSchedule"
+  tolerations: {}
+
     
-  nodeSelector:
-    node-role: infra
+  nodeSelector:  {}
 
   persistence:
     # -- Enable creating PVCs which is required when using boltdb-shipper
@@ -1881,14 +1838,10 @@ memcachedChunks:
   # -- Pod Disruption Budget maxUnavailable
   maxUnavailable: null
   # -- Node selector for memcached-chunks pods
-  tolerations:
-  - key: "node-role"
-    operator: "Equal"
-    value: "infra"
-    effect: "NoSchedule"
+  tolerations: {}
+
     
-  nodeSelector:
-    node-role: infra
+  nodeSelector:  {}
 
   persistence:
     # -- Enable creating PVCs which will persist cached data through restarts
@@ -1956,14 +1909,9 @@ memcachedFrontend:
   # -- Pod Disruption Budget maxUnavailable
   maxUnavailable: 1
   # -- Node selector for memcached-frontend pods
-  tolerations:
-  - key: "node-role"
-    operator: "Equal"
-    value: "infra"
-    effect: "NoSchedule"
+  tolerations: {}
     
-  nodeSelector:
-    node-role: infra
+  nodeSelector:  {}
 
   persistence:
     # -- Enable creating PVCs which will persist cached data through restarts
@@ -2027,14 +1975,9 @@ memcachedIndexQueries:
   # -- Pod Disruption Budget maxUnavailable
   maxUnavailable: null
   # -- Node selector for memcached-index-queries pods
-  tolerations:
-  - key: "node-role"
-    operator: "Equal"
-    value: "infra"
-    effect: "NoSchedule"
+  tolerations: {}
     
-  nodeSelector:
-    node-role: infra
+  nodeSelector:  {}
 
   persistence:
     # -- Enable creating PVCs which will persist cached data through restarts
@@ -2098,14 +2041,9 @@ memcachedIndexWrites:
   # -- Pod Disruption Budget maxUnavailable
   maxUnavailable: null
   # -- Node selector for memcached-index-writes pods
-  tolerations:
-  - key: "node-role"
-    operator: "Equal"
-    value: "infra"
-    effect: "NoSchedule"
-    
-  nodeSelector:
-    node-role: infra
+  tolerations: {}
+
+  nodeSelector:  {}
     
   persistence:
     # -- Enable creating PVCs which will persist cached data through restarts
