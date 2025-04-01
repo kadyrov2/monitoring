@@ -3,13 +3,14 @@ pipeline {
 
     environment {
         CLUSTER_NAME = 'tim-cluster'
-        NAMESPACE = 'default'
-        HELM_RELEASE_NAME = 'nginx'
+        NAMESPACE = 'monitoring'  // Лучше использовать отдельный namespace для мониторинга
+        HELM_RELEASE_NAME = 'grafana'
         HELM_CHART_PATH = './grafana/'
+        HELM_VALUES_FILE = './grafana/values.yaml'  // Добавил явное указание values файла
     }
 
     parameters {
-        booleanParam(name: 'DELETE_DEPLOY', defaultValue: false, description: 'Удалить деплой ?')
+        booleanParam(name: 'DELETE_DEPLOY', defaultValue: false, description: 'Удалить деплой?')
     }
 
     stages {
@@ -19,59 +20,76 @@ pipeline {
             }
         }
 
-        stage('login Yandex Container Registry') {
+        stage('Setup Kubernetes Context') {
             steps {
                 script {
                     withCredentials([file(credentialsId: 'yandex-cloud-sa-key', variable: 'SA_KEY_FILE')]) {
-                    sh """
-                        ~/yandex-cloud/bin/yc config set service-account-key ${SA_KEY_FILE}
-                    """
+                        sh """
+                            ~/yandex-cloud/bin/yc config set service-account-key ${SA_KEY_FILE}
+                            ~/yandex-cloud/bin/yc managed-kubernetes cluster get-credentials ${CLUSTER_NAME} --external --force
+                        """
                     }
-                    sh """
-                        ~/yandex-cloud/bin/yc managed-kubernetes cluster get-credentials ${CLUSTER_NAME} --external --force
-                    """
+                    // Проверяем подключение к кластеру
+                    sh "kubectl cluster-info"
                 }
             }
         }
 
-        stage('Deploy') {
-              when {
+        stage('Deploy Grafana') {
+            when {
                 expression { params.DELETE_DEPLOY == false }
             }
             steps {
                 script {
-                    sh "pwd"
-                    sh "ls -l"
                     sh """
                         helm upgrade --install ${HELM_RELEASE_NAME} ${HELM_CHART_PATH} \
                             --namespace ${NAMESPACE} \
-                            --create-namespace 
+                            --create-namespace \
+                            -f ${HELM_VALUES_FILE} \
+                            --wait  # Ожидаем завершения развертывания
                     """
+                    // Проверяем статус релиза
+                    sh "helm status ${HELM_RELEASE_NAME} --namespace ${NAMESPACE}"
+                    // Проверяем поды
+                    sh "kubectl get pods -n ${NAMESPACE} -l app.kubernetes.io/name=grafana"
                 }
             }
         }
 
-        stage('Delete ') {
+        stage('Delete Grafana') {
             when {
                 expression { params.DELETE_DEPLOY == true }
             }
             steps {
                 script {
-                    sh """
-                        helm uninstall ${HELM_RELEASE_NAME} --namespace ${NAMESPACE}
-                    """
-                    echo "Деплой ${HELM_RELEASE_NAME} успешно удален."
+                    // Проверяем существует ли релиз перед удалением
+                    def releaseExists = sh(
+                        script: "helm status ${HELM_RELEASE_NAME} --namespace ${NAMESPACE} >/dev/null 2>&1",
+                        returnStatus: true
+                    ) == 0
+                    
+                    if (releaseExists) {
+                        sh """
+                            helm uninstall ${HELM_RELEASE_NAME} --namespace ${NAMESPACE}
+                        """
+                        echo "Деплой ${HELM_RELEASE_NAME} успешно удален."
+                    } else {
+                        echo "Релиз ${HELM_RELEASE_NAME} не найден в namespace ${NAMESPACE}"
+                    }
                 }
             }
         }
     }
 
     post {
+        always {
+            echo "Этап выполнения pipeline завершен"
+        }
         success {
-            echo 'Nginx успешно развернут с помощью Helm в Yandex Managed Kubernetes!'
+            echo 'Grafana успешно развернута с помощью Helm в Yandex Managed Kubernetes!'
         }
         failure {
-            echo 'Ошибка при развертывании Nginx с помощью Helm.'
+            echo 'Ошибка при развертывании Grafana с помощью Helm.'
         }
     }
 }
