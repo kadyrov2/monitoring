@@ -5,7 +5,7 @@ pipeline {
         CLUSTER_NAME = 'tim-cluster'
         NAMESPACE = 'default'
         HELM_RELEASE_NAME = 'nginx'
-        HELM_CHART_PATH = './kubernetes-monitoring/loki/'
+        HELM_CHART_PATH = './loki/'
     }
 
     parameters {
@@ -15,7 +15,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/Kuber-2024-10OTUS/kadyrov2_repo.git'
+                git branch: 'main', url: 'https://github.com/kadyrov2/monitoring.git'
             }
         }
 
